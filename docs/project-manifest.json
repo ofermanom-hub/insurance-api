@@ -1,0 +1,61 @@
+﻿{
+  "project": {
+    "name": "Insurance API",
+    "version": "1.0.0",
+    "description": "Vehicle lookup proxy for license plate validation",
+    "repo": "https://github.com/ofermanom-hub/insurance-api"
+  },
+  "architecture": {
+    "style": "layered-proxy",
+    "layers": ["api", "core", "integrations", "models", "config"],
+    "external_dependencies": ["upstream-vehicle-service"],
+    "entry_point": "src/main.py",
+    "runtime": "Python 3.11 / FastAPI / uvicorn"
+  },
+  "risks": [
+    {
+      "title": "Upstream API unavailability",
+      "impact": "High",
+      "likelihood": "Medium",
+      "mitigation": ["retry with backoff (3 attempts)", "503 response with clear message"]
+    },
+    {
+      "title": "Rate limit bypass",
+      "impact": "Medium",
+      "likelihood": "Low",
+      "mitigation": ["slowapi 30 req/min per IP", "CORS origin restriction in production"]
+    },
+    {
+      "title": "License plate data exposure in logs",
+      "impact": "High",
+      "likelihood": "Low",
+      "mitigation": ["plate masking (last 2 digits only)", "no PII in error responses"]
+    },
+    {
+      "title": "Upstream response shape change",
+      "impact": "High",
+      "likelihood": "Medium",
+      "mitigation": ["Pydantic strict parsing", "UPSTREAM_MALFORMED error code", "structured logging"]
+    }
+  ],
+  "onboarding": [
+    {
+      "phase": "Setup",
+      "tasks": ["Clone repo", "Copy .env.example to .env", "Install requirements", "Run uvicorn src.main:app --reload"]
+    },
+    {
+      "phase": "Understand",
+      "tasks": ["Read docs/architecture.md", "Read docs/api-spec.md", "Open /docs Swagger UI", "Trace a request through api -> core -> integrations"]
+    },
+    {
+      "phase": "Contribute",
+      "tasks": ["Run pytest tests/", "Use prompts/ for code review", "Check .github/workflows/ci.yml for CI gates"]
+    }
+  ],
+  "metrics": [
+    {"name": "API latency",          "threshold": "200ms",  "alert": "p95 > 500ms"},
+    {"name": "Upstream error rate",  "threshold": "1%",     "alert": "> 5% in 5min window"},
+    {"name": "Rate limit hits",      "threshold": "monitor","alert": "> 100/min per IP"},
+    {"name": "Retry exhaustion rate","threshold": "0%",     "alert": "any UPSTREAM_UNAVAILABLE in prod"}
+  ]
+}
