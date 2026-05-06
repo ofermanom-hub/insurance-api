@@ -1,17 +1,15 @@
-﻿import logging
+import logging
 
 from fastapi import Request
 from fastapi.responses import JSONResponse
 from fastapi.routing import APIRouter
-from slowapi import Limiter
-from slowapi.util import get_remote_address
 
+from src.core.limiter import limiter
 from src.core.vehicle_lookup import lookup_vehicle
 from src.models.vehicle import PlateRequest
 
 logger = logging.getLogger("insurance_api.api.routes")
 
-limiter = Limiter(key_func=get_remote_address, default_limits=["30/minute"])
 router = APIRouter()
 
 _ERROR_MESSAGES: dict[str, str] = {

@@ -1,4 +1,4 @@
-﻿import logging
+import logging
 import time
 from contextlib import asynccontextmanager
 
@@ -8,8 +8,9 @@ from fastapi.responses import JSONResponse
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 
-from src.api.routes import limiter, router
+from src.api.routes import router
 from src.config.settings import ALLOWED_ORIGINS, ENV
+from src.core.limiter import limiter
 
 logging.basicConfig(
     level=logging.INFO,

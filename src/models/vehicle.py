@@ -1,10 +1,10 @@
-﻿import re
+import re
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, field_validator
 
 
 class PlateRequest(BaseModel):
-    license_plate: str = Field(min_length=7, max_length=8)
+    license_plate: str
 
     @field_validator("license_plate")
     @classmethod
